@@ -1,1 +1,2 @@
-ES6_basic.2
+# ES6_basic
+Back-end - ES6 Basics

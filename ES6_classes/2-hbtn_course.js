@@ -1,47 +1,53 @@
-// Holberton Course
 export default class HolbertonCourse {
-    constructor(name = '', length = 0, students = []) {
-      this.name = name;
-      this.length = length;
-      this.students = students;
-    }
-  
-    get name() {
-      return this._name;
-    }
-  
-    set name(value) {
-      if (typeof value !== 'string') {
-        throw new TypeError('Name must be a string');
-      }
-      this._name = value;
-    }
-  
-    get length() {
-      return this._length;
-    }
-  
-    set length(value) {
-      if (typeof value !== 'number') {
-        throw TypeError('Length must be a number');
-      }
-      this._length = value;
-    }
-  
-    get students() {
-      return this._students;
-    }
-  
-    set students(currStudents) {
-      if (typeof currStudents === 'object') {
-        for (const student in currStudents) {
-          if (typeof student !== 'string') {
-            throw new TypeError('Students must be an array of strings');
-          }
-        }
-      } else {
-        throw new TypeError('Students must be an array of strings');
-      }
-      this._students = currStudents;
-    }
+  constructor(name, length, students) {
+    this._name = HolbertonCourse.validateString(name, 'Name');
+    this._length = HolbertonCourse.validateNumber(length, 'Length');
+    this._students = HolbertonCourse.validateArray(students, 'Students');
   }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(newName) {
+    this._name = HolbertonCourse.validateString(newName, 'Name');
+  }
+
+  get length() {
+    return this._length;
+  }
+
+  set length(newLength) {
+    this._length = HolbertonCourse.validateNumber(newLength, 'Length');
+  }
+
+  get students() {
+    return this._students;
+  }
+
+  set students(newStudents) {
+    this._students = HolbertonCourse.validateArray(newStudents, 'Students');
+  }
+
+  static validateString(value, propertyName) {
+    if (typeof value !== 'string') {
+      throw new TypeError(`${propertyName} must be a string`);
+    }
+    return value;
+  }
+
+  static validateNumber(value, propertyName) {
+    if (typeof value !== 'number') {
+      throw new TypeError(`${propertyName} must be a number`);
+    }
+    return value;
+  }
+
+  static validateArray(value, propertyName) {
+    // Checking that the value is an array and that every element in it is a string
+    if (!Array.isArray(value) || !value.every((student) => typeof student === 'string')) {
+      throw new TypeError(`${propertyName} must be an array`);
+    }
+    return value;
+  }
+}
