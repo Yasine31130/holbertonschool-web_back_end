@@ -1,28 +1,37 @@
-class Currency {
-  constructor(code, name) {
-    this.code = code;
-    this.name = name;
+/*
+    Make method
+    This can't with arrow,
+    because arrow function doesn't work with this
+*/
+export default class Currency {
+    constructor(code = '', name = '') {
+      this.code = code;
+      this.name = name;
+    }
+  
+    displayFullCurrency() {
+      return `${this.name} (${this.code})`;
+    }
+  
+    get code() {
+      return this._code;
+    }
+  
+    set code(value) {
+      if (typeof value !== 'string') {
+        throw new TypeError('Code must be a string');
+      }
+      this._code = value;
+    }
+  
+    get name() {
+      return this._name;
+    }
+  
+    set name(value) {
+      if (typeof value !== 'string') {
+        throw new TypeError('Name must be a string');
+      }
+      this._name = value;
+    }
   }
-
-  get code() {
-    return this._code;
-  }
-
-  set code(code) {
-    if (typeof code === 'string') this._code = code;
-  }
-
-  get name() {
-    return this._name;
-  }
-
-  set name(name) {
-    if (typeof name === 'string') this._name = name;
-  }
-
-  displayFullCurrency() {
-    return `${this.name} (${this.code})`;
-  }
-}
-
-export default Currency;
