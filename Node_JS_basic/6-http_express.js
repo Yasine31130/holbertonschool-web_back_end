@@ -1,15 +1,14 @@
 const express = require('express');
-
 const app = express();
-const port = 1245;
-const host = '0.0.0.0';
 
+// Define route for '/'
 app.get('/', (req, res) => {
-	res.send('Hello Holberton School!');
+    res.send('Hello Holberton School!');
 });
 
-app.listen(port, host, () => {
-	console.log(`Server listening at http://${host}:${port}`);
+// Listen on port 1245
+app.listen(1245, () => {
+    console.log('Express server is running on port 1245');
 });
 
 module.exports = app;

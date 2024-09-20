@@ -1,56 +1,32 @@
 const fs = require('fs');
 
-
-function countStudents(path){
-    try{
-        const data = fs.readFileSync(path,
-            { encoding:'utf8', });
-
-
-        if (!data) throw new Error('Cannot load the database')
-        const lines = data.split('\n')
-
-
-        const firstLine = lines.shift().split(',')
-        const students = [];
-        lines.forEach((line) => {
-            students.push(line.split(','));
-        })
-
-
-        const field = firstLine.findIndex(column => column === 'field');
-        const firstName = firstLine.findIndex(column => column === 'firstname')
-
-
-        if (field === -1 || firstName === -1){
+function countStudents(path) {
+    try {
+        if (!fs.existsSync(path)) {
             throw new Error('Cannot load the database');
         }
+        const data = fs.readFileSync(path, 'utf8');
+        const lines = data.split('\n');
 
-
-        const fieldStudents = {};
-
-
-        students.forEach((student) => {
-            const studentField = student[field];
-            const studentFirstName = student[firstName];
-
-
-            if (studentField && studentFirstName){
-                fieldStudents[studentField] = fieldStudents[studentField] || [];
-                fieldStudents[studentField].push(studentFirstName)
-            }
-        });
-
+        const students = lines.filter(line => line.trim() !== '' && !line.startsWith('firstname'));
 
         console.log(`Number of students: ${students.length}`);
-        Object.entries(fieldStudents).forEach(([studentField, studentFirstName]) => {
-            console.log(`Number of students in ${studentField}: ${studentFirstName.length}. List: ${studentFirstName.join(', ')}`);
-        })
-    } catch {
+
+        const fields = {};
+
+        students.forEach(student => {
+            const [firstname, , , field] = student.split(',');
+            if (!fields[field]) fields[field] = [];
+            fields[field].push(firstname);
+        });
+
+        for (const [field, names] of Object.entries(fields)) {
+            console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
+        }
+    } catch (error) {
+        console.error('Error reading file at path: ${path}');
         throw new Error('Cannot load the database');
     }
 }
 
-
 module.exports = countStudents;
-
