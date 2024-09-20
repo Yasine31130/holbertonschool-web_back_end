@@ -1,47 +1,51 @@
-const fs = require('fs').promises; // Importe les fonctions promises de fs
+const fs = require('fs');
 
-async function countStudents(path) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(path, 'utf-8')
-            .then(data => {
-                // Divise le contenu en lignes, puis filtre les lignes vides
-                const lines = data.split('\n').filter(line => line.trim() !== '');
+function countStudents(path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf-8', (err, data) => {
+      if (err) {
+        reject(new Error('Cannot load the database'));
+        return;
+      }
 
-                // La première ligne contient les en-têtes, on la retire pour ne garder que les données
-                const students = lines.slice(1);
+      const lines = data.split('\n').filter((line) => line.trim() !== '');
 
-                // Compte le nombre total d'étudiants
-                const totalStudents = students.length;
-                console.log(`Number of students: ${totalStudents}`);
+      // Remove the header (first line)
+      lines.shift();
 
-                // Crée un objet pour stocker le nombre d'étudiants par domaine et la liste de leurs prénoms
-                const fieldCounts = {};
+      const students = {};
+      let totalStudents = 0;
 
-                // Parcours chaque étudiant
-                for (const student of students) {
-                    const [firstname, , , field] = student.split(','); // Extrait le prénom et le domaine
+      lines.forEach((line) => {
+        const [firstname, , , field] = line.split(',');
 
-                    // Si le domaine n'est pas encore dans l'objet, l'ajouter avec un compteur à 0 et une liste vide
-                    if (!fieldCounts[field]) {
-                        fieldCounts[field] = { count: 0, students: [] };
-                    }
+        if (!firstname || !field) {
+          return;
+        }
 
-                    // Incrémente le compteur et ajoute le prénom à la liste
-                    fieldCounts[field].count++;
-                    fieldCounts[field].students.push(firstname);
-                }
+        if (!students[field]) {
+          students[field] = [];
+        }
+        students[field].push(firstname);
+        totalStudents += 1;
+      });
 
-                // Affiche le nombre d'étudiants et la liste des prénoms pour chaque domaine
-                for (const field in fieldCounts) {
-                    console.log(`Number of students in ${field}: ${fieldCounts[field].count}. List: ${fieldCounts[field].students.join(', ')}`);
-                }
+      // Log the total number of students
+      console.log(`Number of students: ${totalStudents}`);
 
-                resolve(); // Résout la promesse une fois que tout est terminé
-            })
-            .catch(error => {
-                reject(new Error('Cannot load the database')); // Rejette la promesse en cas d'erreur
-            });
+      // Log each field with the respective number of students and list of names
+      for (const field in students) {
+        if (Object.prototype.hasOwnProperty.call(students, field)) {
+          const studentList = students[field];
+          console.log(
+            `Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}`,
+          );
+        }
+      }
+
+      resolve();
     });
+  });
 }
 
 module.exports = countStudents;
